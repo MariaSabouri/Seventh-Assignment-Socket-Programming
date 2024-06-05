@@ -2,68 +2,83 @@ package Server;
 
 import netscape.javascript.JSObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.Date;
+import java.util.Vector;
 
 public class ClientHandler implements Runnable {
-    Scanner scn = new Scanner(System.in);
-    private String name;
-    final DataInputStream dis;
-    final DataOutputStream dos;
     Socket s;
+    String username;
+    BufferedWriter bufferedWriter;
+    BufferedReader bufferedReader;
+    // Arraylist to store active clients
+    static Vector<ClientHandler> ar = new Vector<>();
     // constructor
-    public ClientHandler(Socket s, String name, DataInputStream dis, DataOutputStream dos) {
-        this.dis = dis;
-        this.dos = dos;
-        this.name = name;
+    public ClientHandler(Socket s) {
         this.s = s;
+        try {
+            this.bufferedReader=new BufferedReader(new InputStreamReader(s.getInputStream()));
+            this.bufferedWriter=new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+            this.username=bufferedReader.readLine();
+            ar.add(this);
+            broadCasting("Server: "+username+" has intend the chat!");
+        }catch (IOException e){
+            closeEverything(s,bufferedReader,bufferedWriter);
+        }
     }
 
     @Override
     public void run() {
-        String received;
-        while (true){
-            // receive the string
+        while (s.isConnected()){
             try {
-                received = dis.readUTF();
-                System.out.println(received);
-                // break the string into message and recipient part
-                StringTokenizer st = new StringTokenizer(received, "#");
-                String MsgToSend = st.nextToken();
-                String recipient = st.nextToken();
-                // search for the recipient in the connected devices list.
-                // ar is the vector storing client of active users
-                for (ClientHandler mc : Server.ar)
-                {
-                    // if the recipient is found, write on its
-                    // output stream
-                    if (mc.name.equals(recipient))
-                    {
-                        mc.dos.writeUTF(this.name+" : "+MsgToSend);
-                        break;
-                    }
+                broadCasting(username+": "+bufferedReader.readLine());
+
+            }catch (IOException e){
+                closeEverything(s,bufferedReader,bufferedWriter);
+                break;
+            }
+        }
+    }
+
+
+
+    private void broadCasting(String message){
+        for (ClientHandler clientHandler:ar){
+            try {
+                if (!clientHandler.username.equals(username)){
+                    clientHandler.bufferedWriter.write(message);
+                    clientHandler.bufferedWriter.newLine();
+                    clientHandler.bufferedWriter.flush();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            }catch (IOException e){
+                closeEverything(s,bufferedReader,bufferedWriter);
             }
-            try
-            {
-                // closing resources
-                this.dis.close();
-                this.dos.close();
-
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-
-
-
         }
 
+    }
 
+    private void removeClientHandler(){
+        ar.remove(this);
+        broadCasting("Server: "+username+" has left the chat!");
+    }
+
+    private void closeEverything(Socket s,BufferedReader bufferedReader,BufferedWriter bufferedWriter) {
+        removeClientHandler();
+        try {
+
+            if (s!=null){
+                s.close();
+            }
+            if (bufferedReader!=null){
+                bufferedReader.close();
+            }
+            if (bufferedWriter!=null){
+                bufferedWriter.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

@@ -5,47 +5,48 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 // Server Class
 public class Server {
-    // TODO: Implement the server-side operations
-    // Arraylist to store active clients
-    static ArrayList<ClientHandler> ar=new ArrayList<>();
-    // counter for clients
-    static int i = 0;
-    // TODO: Add constructor and necessary methods
+    // TODO: Implement the server-side operations        // TODO: Add constructor and necessary methods
+    private ServerSocket ss;
 
-    public static void main(String[] args) throws IOException {
-        // TODO: Implement the main method to start the server
-        // server is listening on port 1234
-        ServerSocket ss = new ServerSocket(1234);
-        Socket s;
-        // running infinite loop for getting
-        // client request
-        while (true){
-            // Accept the incoming request
-            s = ss.accept();
-            // obtain input and output streams
-            DataInputStream dis = new DataInputStream(s.getInputStream());
-            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-            // Create a new handler object for handling this request.
-            ClientHandler mtch = new ClientHandler(s,"client " + i, dis, dos);
-            // Create a new Thread with this object.
-            Thread t = new Thread(mtch);
-            System.out.println("Adding this client to active client list");
+    public Server(ServerSocket ss) {
+        this.ss=ss;
+    }
+    private void startServer(){
 
-            // add this client to active clients list
-            ar.add(mtch);
+        try {
+            while (!ss.isClosed()){
+                Socket s=ss.accept();
+                System.out.println("a user has joined! ");
+                ClientHandler clientHandler=new ClientHandler(s);
+                Thread thread=new Thread(clientHandler);
+                thread.start();
 
-            // start the thread.
-            t.start();
+            }
 
-            // increment i for new client.
-            // i is used for naming only, and can be replaced
-            // by any naming scheme
-            i++;
-
+        }catch (IOException e){
+            closeEverything();
         }
+
+    }
+
+
+    private void closeEverything() {
+        try {
+            if (ss!=null){
+                ss.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket=new ServerSocket(6666);
+        Server server=new Server(serverSocket);
+        server.startServer();
+
+
     }
 }
