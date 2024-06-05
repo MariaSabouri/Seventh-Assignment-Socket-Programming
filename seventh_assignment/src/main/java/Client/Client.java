@@ -1,9 +1,9 @@
 package Client;
 
+import Server.ClientHandler;
+
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 // Client Class
@@ -19,12 +19,11 @@ public class Client {
         try {
             this.socket=socket;
             this.bufferedWriter=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.clientUsename = clientUsename;
             this.bufferedReader=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.clientUsename = clientUsename;
 
         }catch (IOException e){
             CloseEveryThing(socket,bufferedReader,bufferedWriter);
-            System.out.println("hhhhhhhhh");
         }
 
     }
@@ -76,6 +75,7 @@ public class Client {
 
     }
 
+
     private static void CloseEveryThing(Socket s,BufferedReader bufferedReader,BufferedWriter bufferedWriter){
         try {
             if (s!=null){
@@ -99,6 +99,9 @@ public class Client {
         String usename= sc.nextLine();
         Socket s=new Socket("localhost",ServerPort);
         Client client= new Client(s,usename);
+
+        System.out.println(ClientHandler.chatHostory);
+
 
 
         client.sendMessage();

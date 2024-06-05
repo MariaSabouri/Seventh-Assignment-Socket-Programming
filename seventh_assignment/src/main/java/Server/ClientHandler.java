@@ -1,10 +1,7 @@
 package Server;
 
-import netscape.javascript.JSObject;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.Date;
 import java.util.Vector;
 
 public class ClientHandler implements Runnable {
@@ -12,6 +9,8 @@ public class ClientHandler implements Runnable {
     String username;
     BufferedWriter bufferedWriter;
     BufferedReader bufferedReader;
+    public static String chatHostory="";
+
     // Arraylist to store active clients
     static Vector<ClientHandler> ar = new Vector<>();
     // constructor
@@ -21,8 +20,15 @@ public class ClientHandler implements Runnable {
             this.bufferedReader=new BufferedReader(new InputStreamReader(s.getInputStream()));
             this.bufferedWriter=new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             this.username=bufferedReader.readLine();
+
             ar.add(this);
+
             broadCasting("Server: "+username+" has intend the chat!");
+
+            bufferedWriter.write(chatHostory);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
         }catch (IOException e){
             closeEverything(s,bufferedReader,bufferedWriter);
         }
@@ -32,7 +38,11 @@ public class ClientHandler implements Runnable {
     public void run() {
         while (s.isConnected()){
             try {
-                broadCasting(username+": "+bufferedReader.readLine());
+                String read=bufferedReader.readLine();
+                //saving chat message
+                ChatHistory(username+": "+read);
+
+                broadCasting(username+": "+read);
 
             }catch (IOException e){
                 closeEverything(s,bufferedReader,bufferedWriter);
@@ -44,6 +54,7 @@ public class ClientHandler implements Runnable {
 
 
     private void broadCasting(String message){
+
         for (ClientHandler clientHandler:ar){
             try {
                 if (!clientHandler.username.equals(username)){
@@ -80,5 +91,9 @@ public class ClientHandler implements Runnable {
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+    //Chat history for a new arriver
+    public static void ChatHistory(String message){
+        chatHostory=chatHostory+"\n"+message;
     }
 }
