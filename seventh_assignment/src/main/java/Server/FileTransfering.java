@@ -54,19 +54,21 @@ public class FileTransfering {
                 bufferedWriter.write("Server: You have exit from download table!");
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
-            } else if (!(1 < index && index < 11)) {
+                return null;
+            } else if (!(0 < index && index < 11)) {
 
                     bufferedWriter.write("Server: didn't undrestand");
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
+                    return null;
                 }
             else{
+                System.out.println(filesLists[index-1].getName());
                 return filesLists[index - 1];
             }
 
             }catch(IOException e){
                 CloseEverything(socket, bufferedReader, bufferedWriter);
-            }finally{
                 return null;
             }
     }
@@ -77,8 +79,11 @@ public class FileTransfering {
         try {
             int idex=Integer.parseInt(bufferedReader.readLine());
             File file=chooseFile(idex);
+
             if (file!=null){
+
                 try {
+
 
                     fileReader=new FileReader(file);
                     fileWriter=new FileWriter(download_path+"//"+file.getName());
@@ -86,6 +91,10 @@ public class FileTransfering {
                     while ((content=fileReader.read())!=-1){
                         fileWriter.append((char) content);
                     }
+                    bufferedWriter.write(file.getName()+" downloaded!");
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+
 
                 }finally {
 
