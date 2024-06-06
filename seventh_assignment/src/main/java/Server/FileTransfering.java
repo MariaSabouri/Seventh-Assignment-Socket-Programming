@@ -2,8 +2,7 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.util.Scanner;
+
 
 public class FileTransfering {
     private static String path="D:\\Maria\\term4\\computer science\\java_programing\\HW\\Seventh-Assignment-Socket-Programming\\" +

@@ -22,8 +22,10 @@ public class ClientHandler implements Runnable {
             this.username=bufferedReader.readLine();
 
             ar.add(this);
+            cheatsheet();
 
             broadCasting("Server: "+username+" has intend the chat!");
+
 
             bufferedWriter.write(chatHostory);
             bufferedWriter.newLine();
@@ -75,6 +77,19 @@ public class ClientHandler implements Runnable {
         }
 
     }
+    private void cheatsheet(){
+        try {
+            bufferedWriter.write(String.format("%-20s%s%20s%n", "############", "Cheat sheet:", "############"));
+            bufferedWriter.newLine();
+            bufferedWriter.write(String.format("%-5d%-15s%n",1,"For downloading files please Enter \"data\""));
+            bufferedWriter.write(String.format("%-5d%-15s%n",2,"If you don't want to download after entering the \"data\",please enter the option 0"));
+
+
+            bufferedWriter.flush();
+        }catch (IOException e){
+            closeEverything(s,bufferedReader,bufferedWriter);
+        }
+    }
 
     private void removeClientHandler(){
         ar.remove(this);
@@ -99,7 +114,8 @@ public class ClientHandler implements Runnable {
         }
     }
     //Chat history for a new arriver
-    public static void ChatHistory(String message){
+    private static void ChatHistory(String message){
         chatHostory=chatHostory+"\n"+message;
     }
+
 }
