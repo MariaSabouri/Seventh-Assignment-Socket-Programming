@@ -1,6 +1,7 @@
 package Client;
 
 import Server.ClientHandler;
+import Server.FileTransfering;
 
 import java.io.*;
 import java.net.Socket;
@@ -106,6 +107,7 @@ public class Client {
 
         client.sendMessage();
         client.receiveMessage();
+
 
     }
 
