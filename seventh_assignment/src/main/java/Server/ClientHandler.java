@@ -39,13 +39,16 @@ public class ClientHandler implements Runnable {
         while (s.isConnected()){
             try {
                 String read=bufferedReader.readLine();
-                //saving chat message
-                ChatHistory(username+": "+read);
+
                 if (read.equals("data")){
                     FileTransfering fileTransfering= new FileTransfering(s);
                     fileTransfering.downloadingFile();
                 }
-                else broadCasting(username+": "+read);
+                else{
+                    //saving chat message
+                    ChatHistory(username+": "+read);
+                    broadCasting(username+": "+read);
+                }
 
             }catch (IOException e){
                 closeEverything(s,bufferedReader,bufferedWriter);

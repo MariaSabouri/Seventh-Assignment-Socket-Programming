@@ -34,10 +34,11 @@ public class FileTransfering {
         try {
             bufferedWriter.write(String.format("%-20s%s%20s%n", "############", "file:", "############"));
             bufferedWriter.newLine();
-        int i=1;
-        for (File file:filesLists){
+
+            bufferedWriter.write(String.format("%-5d%-15s%n",0,"close"));
+            int i=1;
+            for (File file:filesLists){
                 bufferedWriter.write(String.format("%-5d%-15s%n",i,file.getName()));
-//                bufferedWriter.newLine();
             i++;
         }
         bufferedWriter.flush();
@@ -48,42 +49,50 @@ public class FileTransfering {
     }
 
     //which file has chosen to be downloaded?
-    public static File chooseFile(int index){
-        if (!(0<index && index<11)){
-            try {
-                bufferedWriter.write("Server: didn't undrestand");
+    public static File chooseFile(int index) {
+        try {
+            if (index == 0) {
+                bufferedWriter.write("Server: You have exit from download table!");
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
-            }catch (IOException e){
-                CloseEverything(socket,bufferedReader,bufferedWriter);
-            }finally {
-                return null;
+            } else if (!(1 < index && index < 11)) {
+
+                    bufferedWriter.write("Server: didn't undrestand");
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                }
+            else{
+                return filesLists[index - 1];
             }
 
-        }
-        else {
-            return filesLists[index-1];
-        }
-
+            }catch(IOException e){
+                CloseEverything(socket, bufferedReader, bufferedWriter);
+            }finally{
+                return null;
+            }
     }
+
 
     public static void downloadingFile(){
         displayFiles();
         try {
             int idex=Integer.parseInt(bufferedReader.readLine());
-
             File file=chooseFile(idex);
-            try {
-                fileReader=new FileReader(file);
-                fileWriter=new FileWriter(download_path+"//"+file.getName());
-                int content;
-                while ((content=fileReader.read())!=-1){
-                    fileWriter.append((char) content);
-                }
+            if (file!=null){
+                try {
 
-            }finally {
-                if (fileReader!=null){
-                    fileReader.close();
+                    fileReader=new FileReader(file);
+                    fileWriter=new FileWriter(download_path+"//"+file.getName());
+                    int content;
+                    while ((content=fileReader.read())!=-1){
+                        fileWriter.append((char) content);
+                    }
+
+                }finally {
+
+                    if (fileReader!=null){
+                        fileReader.close();
+                    }
                 }
             }
 
