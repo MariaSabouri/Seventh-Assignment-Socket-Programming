@@ -63,7 +63,6 @@ public class FileTransfering {
                     return null;
                 }
             else{
-                System.out.println(filesLists[index-1].getName());
                 return filesLists[index - 1];
             }
 
@@ -91,7 +90,7 @@ public class FileTransfering {
                     while ((content=fileReader.read())!=-1){
                         fileWriter.append((char) content);
                     }
-                    bufferedWriter.write(file.getName()+" downloaded!");
+                    bufferedWriter.write("Server: "+file.getName()+" downloaded!");
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
 

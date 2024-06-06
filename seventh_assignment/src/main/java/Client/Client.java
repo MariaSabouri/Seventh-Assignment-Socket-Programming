@@ -44,7 +44,7 @@ public class Client {
 
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
-                        System.out.println("sended");
+                        System.out.println("Server: sended");
 
                     }
 
